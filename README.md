@@ -2,12 +2,6 @@
 
 A tool that computes optimal and approximate local alignments between two genomic sequences encrypted by HE schemes
 
-## Binary files for Linux
-
-opt_tfhe: Returns score and location of an optimal local alignment using TFHE scheme.<br/>
-app_tfhe: Returns score and location of an approximate local alignment using TFHE scheme.<br/>
-app_heaan: Returns score of an approximate local alignment using HEAAN scheme.
-
 ## Requirement
 
 OpenMP<br/>
@@ -18,7 +12,7 @@ Python 3
 ## Run
 
 ```
-python3 wrapper.py (app|opt) inputFileX inputFileY [reflen] [--scheme M,S,Go,Ge] [--lib (TFHE|HEAAN)]
+python3 homla.py (app|opt) inputFileX inputFileY [reflen] [--scheme M,S,Go,Ge] [--lib (TFHE|HEAAN)]
 ```
 
 `M`-Match score, `S`-Mismatch score, `Go`-Gap opening penalty, and `Ge`-Gap extending penalty.
@@ -38,7 +32,7 @@ For approximate local alignment: x.vcf, y.vcf
 Compute optimal local alignment:
 
 ```
-python3 wrapper.py opt x.fasta y.fasta --scheme 5,-3,-9,-1
+python3 homla.py opt x.fasta y.fasta --scheme 5,-3,-9,-1
 ```
 
 Output:
@@ -61,7 +55,7 @@ Ending pos: 5 7
 Compute approximate local alignment:
 
 ```
-python3 wrapper.py app x.vcf y.vcf 26 --scheme 5,-3,-9,-1 --lib TFHE
+python3 homla.py app x.vcf y.vcf 26 --scheme 5,-3,-9,-1 --lib TFHE
 ```
 
 Output:
@@ -85,7 +79,7 @@ Ending pos: 16
 Or
 
 ```
-python3 wrapper.py app x.vcf y.vcf 26 --scheme 5,-3,-9,-1 --lib HEAAN
+python3 homla.py app x.vcf y.vcf 26 --scheme 5,-3,-9,-1 --lib HEAAN
 ```
 
 Output:
