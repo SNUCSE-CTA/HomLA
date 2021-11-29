@@ -1,6 +1,6 @@
 # Homomorphic Computations of Optimal and Approximate Local Alignments
 
-A tool that computes optimal and approximate local alignments between two genomic sequences encrypted by HE schemes
+A tool that computes optimal and approximate local alignments between two encrypted genomic sequences with affine gap penalty.
 
 ## Requirement
 
