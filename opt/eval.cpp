@@ -5,7 +5,7 @@
 
 using namespace par;
 
-// s(a[i], b[j]) = ;
+// Pre-computing similarity scores
 void sim_score(LS ***S, LS **x, LS **y, int n, int m, int w_sco, int w_alp,
                int s_m, int s_s, CK *ck) {
 
@@ -28,7 +28,7 @@ void sim_score(LS ***S, LS **x, LS **y, int n, int m, int w_sco, int w_alp,
     delete_gate_bootstrapping_ciphertext_array(w_sco, es_s);
 }
 
-// Compute maximum and positions by dianonal-parallel way
+// Computing scores and positions by diagonal-parallel way
 void score(LS ***H, LS ***Hx, LS ***Hy, LS **cx, LS **cy, int n, int m, int s_m,
            int s_s, int g_o, int g_e, int w_sco, int w_pos, int w_alp, CK *ck) {
 
@@ -121,7 +121,7 @@ void score(LS ***H, LS ***Hx, LS ***Hy, LS **cx, LS **cy, int n, int m, int s_m,
 
     sim_score(S, cx, cy, n, m, w_sco, w_alp, s_m, s_s, ck);
 
-    // COMPUTATION BEGINS
+    // SW reccurence computed by diagonal-parallel way
     for (int d = 1; d <= n + m - 1; d++) {
         end = std::min(d, n);
         start = std::max(1, d - m + 1);
@@ -182,7 +182,6 @@ void score(LS ***H, LS ***Hx, LS ***Hy, LS **cx, LS **cy, int n, int m, int s_m,
         }
     }
 
-    // FREE MEMORY
     delete_gate_bootstrapping_ciphertext_array(w_sco, eg_e);
     delete_gate_bootstrapping_ciphertext_array(w_sco, eg_o);
     delete_gate_bootstrapping_ciphertext_array(w_sco, zero);
@@ -207,7 +206,7 @@ void score(LS ***H, LS ***Hx, LS ***Hy, LS **cx, LS **cy, int n, int m, int s_m,
     }
 }
 
-// Tree-based parallel maximum and position search
+// Finding maximum score and its position via tree-based parallel computation
 void find(LS *M, LS *start_x, LS *start_y, LS *end_x, LS *end_y, LS ***H,
           LS ***Hx, LS ***Hy, int n, int m, int w_sco, int w_pos, CK *ck) {
 

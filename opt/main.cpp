@@ -138,6 +138,7 @@ int main(int argc, char *argv[]) {
         g_e = atoi(argv[6]);
     }
 
+    // Reading two strings from files
     string str_x = read_str(x_file);
     string str_y = read_str(y_file);
 
@@ -166,24 +167,21 @@ int main(int argc, char *argv[]) {
     int w_sco = ceil(log2(comp_max_val + 1)) + 1;
     int w_pos = ceil(log2(max(n, m) + 1));
 
-    // Param init and Key gen
+    // Initialzing security params and generating keys
     const int minimum_lambda = 128;
 
     TFheGateBootstrappingParameterSet *params =
         new_default_gate_bootstrapping_parameters(minimum_lambda);
 
-    // generate a random key
     uint32_t seed[] = {314, 1592, 657};
     tfhe_random_generator_setSeed(seed, 3);
     TFheGateBootstrappingSecretKeySet *key =
         new_random_gate_bootstrapping_secret_keyset(params);
 
-    // export the secret key to file for later use
     FILE *secret_key = fopen("secret.key", "wb");
     export_tfheGateBootstrappingSecretKeySet_toFile(secret_key, key);
     fclose(secret_key);
 
-    // export the cloud key to a file (for the cloud)
     FILE *cloud_key = fopen("cloud.key", "wb");
     export_tfheGateBootstrappingCloudKeySet_toFile(cloud_key, &key->cloud);
     fclose(cloud_key);
@@ -192,7 +190,7 @@ int main(int argc, char *argv[]) {
     CK *ck = new_tfheGateBootstrappingCloudKeySet_fromFile(cloud_key2);
     fclose(cloud_key2);
 
-    // ENCRYPT
+    // Encrypting two strings
     auto start = chrono::steady_clock::now();
     encrypt(x, n, y, m, key, params);
     auto end = chrono::steady_clock::now();
@@ -202,10 +200,9 @@ int main(int argc, char *argv[]) {
     cout << "Encryption time: "
          << chrono::duration<double, milli>(diff).count() / 1000 << "s" << endl;
 
-    // Read the cloud key from file
     FILE *cloud_data = fopen("cloud.data", "rb");
 
-    // Read cihertexts
+    // Reading cihertexts from file
     LS **cx = new LS *[n];
     LS **cy = new LS *[m];
 
@@ -227,7 +224,7 @@ int main(int argc, char *argv[]) {
 
     fclose(cloud_data);
 
-    // INIT TABLES
+    // Initializing tables
     LS ***H = new LS **[n + 1];
     LS ***Hx = new LS **[n + 1];
     LS ***Hy = new LS **[n + 1];
@@ -246,6 +243,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Initializing score and positions
     LS *M = new_gate_bootstrapping_ciphertext_array(w_sco, ck->params);
     LS *start_x = new_gate_bootstrapping_ciphertext_array(w_pos, ck->params);
     LS *start_y = new_gate_bootstrapping_ciphertext_array(w_pos, ck->params);
@@ -285,13 +283,19 @@ int main(int argc, char *argv[]) {
          << endl;
     cout << "Ending pos: " << end_x_decrypted << " " << end_y_decrypted << endl;
 #endif
-    // FREE MEMORY
+
     for (int i = 0; i < n; i++) {
         delete_gate_bootstrapping_ciphertext_array(w_alp, cx[i]);
     }
     for (int i = 0; i < m; i++) {
         delete_gate_bootstrapping_ciphertext_array(w_alp, cy[i]);
     }
+
+    delete_gate_bootstrapping_ciphertext_array(w_sco, M);
+    delete_gate_bootstrapping_ciphertext_array(w_pos, start_x);
+    delete_gate_bootstrapping_ciphertext_array(w_pos, start_y);
+    delete_gate_bootstrapping_ciphertext_array(w_pos, end_x);
+    delete_gate_bootstrapping_ciphertext_array(w_pos, end_y);
 
     delete_gate_bootstrapping_secret_keyset(key);
     delete_gate_bootstrapping_cloud_keyset(ck);
